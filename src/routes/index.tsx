@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Upload } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import CloudIllustration from "../components/CloudIllustration";
+import { Button } from "@/components/ui/Button";
 
 export const Route = createFileRoute("/")({ component: FileConverterLanding });
 
@@ -76,24 +77,10 @@ function FileConverterLanding() {
           </div>
 
           {/* Upload button */}
-          <button
-            onClick={handleUploadClick}
-            className="
-              flex items-center gap-2
-              px-8 py-4
-              bg-gradient-to-b from-brand-blue-light to-brand-blue
-              text-white font-medium
-              rounded-[10px]
-              shadow-[0_4px_12px_rgba(45,136,255,0.3)]
-              hover:shadow-[0_6px_16px_rgba(45,136,255,0.4)]
-              hover:from-[#5AA8FF] hover:to-brand-blue-light
-              transition-all duration-200
-              active:scale-[0.98]
-            "
-          >
+          <Button variant="primary" size="lg" onClick={handleUploadClick}>
             <Upload className="w-5 h-5" />
             <span>Upload Files</span>
-          </button>
+          </Button>
 
           {/* Hidden file input */}
           <input
