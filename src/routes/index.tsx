@@ -3,12 +3,30 @@ import { Upload } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import CloudIllustration from "../components/CloudIllustration";
 import { Button } from "@/components/ui/Button";
+import { FormatSelector } from "@/components/converter/FormatSelector";
+import { ConversionQueue } from "@/components/converter/ConversionQueue";
+import { RateLimitBadge } from "@/components/converter/RateLimitBadge";
+import { useFileConverter } from "@/hooks/useFileConverter";
 
 export const Route = createFileRoute("/")({ component: FileConverterLanding });
 
+const SUPPORTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/avif",
+  "image/gif",
+  "image/tiff",
+  "image/bmp",
+];
+
 function FileConverterLanding() {
   const [isDragOver, setIsDragOver] = useState(false);
+  const [targetFormat, setTargetFormat] = useState("webp");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { conversions, convertFiles, removeConversion, ipAddress } =
+    useFileConverter();
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -20,15 +38,28 @@ function FileConverterLanding() {
     setIsDragOver(false);
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0) {
-      console.log("Dropped files:", files);
-      // TODO: Handle file upload
-    }
-  }, []);
+  const handleFiles = useCallback(
+    async (files: File[]) => {
+      // Filter to only supported image types
+      const imageFiles = files.filter((f) =>
+        SUPPORTED_IMAGE_TYPES.includes(f.type)
+      );
+      if (imageFiles.length > 0) {
+        await convertFiles(imageFiles, targetFormat);
+      }
+    },
+    [convertFiles, targetFormat]
+  );
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      setIsDragOver(false);
+      const files = Array.from(e.dataTransfer.files);
+      handleFiles(files);
+    },
+    [handleFiles]
+  );
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -36,23 +67,34 @@ function FileConverterLanding() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    if (files.length > 0) {
-      console.log("Selected files:", files);
-      // TODO: Handle file upload
+    handleFiles(files);
+    // Reset input so same file can be selected again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
   return (
     <div className="flex-1 flex flex-col bg-[radial-gradient(circle_at_top,#EBF3FF_0%,#FFFFFF_100%)]">
       {/* Main content */}
-      <main className="flex-1 flex flex-col items-center px-6 pt-16">
+      <main className="flex-1 flex flex-col items-center px-6 pt-16 pb-12">
         {/* Heading */}
         <h1 className="text-5xl font-bold tracking-tight text-text-primary mb-6">
           File Converter
         </h1>
-        <p className="text-lg text-text-secondary mb-10">
+        <p className="text-lg text-text-secondary mb-6">
           Convert your files instantly without any ads or registration
         </p>
+
+        {/* Rate limit badge */}
+        <div className="mb-6">
+          <RateLimitBadge ipAddress={ipAddress} />
+        </div>
+
+        {/* Format selector */}
+        <div className="mb-6">
+          <FormatSelector value={targetFormat} onChange={setTargetFormat} />
+        </div>
 
         {/* Dropzone */}
         <div
@@ -87,15 +129,23 @@ function FileConverterLanding() {
             ref={fileInputRef}
             type="file"
             multiple
+            accept="image/*"
             className="hidden"
             onChange={handleFileChange}
           />
 
           {/* Hint text */}
           <p className="mt-4 text-sm text-text-hint">
-            or drag and drop files here
+            or drag and drop images here
           </p>
         </div>
+
+        {/* Conversion queue */}
+        <ConversionQueue
+          items={conversions}
+          targetFormat={targetFormat}
+          onRemove={removeConversion}
+        />
       </main>
     </div>
   );

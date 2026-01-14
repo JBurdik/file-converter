@@ -32,11 +32,18 @@ export const Route = createRootRouteWithContext<{
         name: "viewport",
         content: "width=device-width, initial-scale=1",
       },
+      {
+        name: "theme-color",
+        content: "#2d88ff",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "/favicon.ico" },
+      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+      { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+      { rel: "apple-touch-icon", href: "/logo192.png" },
     ],
+    title: "CloudConvert - File Converter",
   }),
   beforeLoad: async (ctx) => {
     const token = await getAuth();

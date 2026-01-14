@@ -1,6 +1,6 @@
-import { forwardRef, type ButtonHTMLAttributes } from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "@/lib/utils"
+import { cva, type VariantProps } from "class-variance-authority";
+import { type ButtonHTMLAttributes, forwardRef } from "react";
+import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
   // Base styles matching your app's feel
@@ -38,11 +38,12 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
-)
+  },
+);
 
 export interface ButtonProps
-  extends ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {}
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -53,10 +54,10 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         {...props}
       />
-    )
-  }
-)
+    );
+  },
+);
 
-Button.displayName = "Button"
+Button.displayName = "Button";
 
-export { Button, buttonVariants }
+export { Button, buttonVariants };

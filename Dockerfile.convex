@@ -1,0 +1,23 @@
+FROM ghcr.io/get-convex/convex-backend:latest
+
+USER root
+
+# Install Node.js and libvips dependencies for sharp
+RUN apt-get update && apt-get install -y \
+    curl \
+    build-essential \
+    python3 \
+    libvips-dev \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install sharp in a separate directory (don't change WORKDIR permanently)
+RUN mkdir -p /convex_modules && \
+    cd /convex_modules && \
+    npm init -y && \
+    npm install sharp
+
+# Set NODE_PATH so actions can find sharp
+ENV NODE_PATH=/convex_modules/node_modules

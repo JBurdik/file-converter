@@ -1,7 +1,9 @@
 services:
   backend:
-    # Change this to :${REV} if you want to pin to a specific version
-    image: ghcr.io/get-convex/convex-backend:latest
+    # Custom build with sharp support
+    build:
+      context: .
+      dockerfile: Dockerfile.convex
     stop_grace_period: 10s
     stop_signal: SIGINT
     ports:

@@ -1,18 +1,15 @@
 import { Link } from "@tanstack/react-router";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
-import { FileStack, LucideLogOut } from "lucide-react";
+import { LucideLogOut } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { authClient } from "@/lib/auth-client";
 import LoginModal from "./auth/LoginModal";
 import SignupModal from "./auth/SignupModal";
+import Logo from "./Logo";
 
 export default function Header() {
-  const handleSignIn = () => {
-    alert("Sign in");
-  };
-  const handleSignUp = () => {
-    alert("Sign in");
-  };
+  const { data } = authClient.useSession();
+
   const handleSignOut = () => {
     authClient.signOut();
   };
@@ -20,9 +17,7 @@ export default function Header() {
   return (
     <header className="px-6 py-4 flex items-center justify-between bg-white/80 backdrop-blur-sm">
       <Link to="/" className="flex items-center gap-2">
-        <div className="w-10 h-10 rounded-lg bg-linear-to-br from-brand-blue-light to-brand-blue flex items-center justify-center">
-          <FileStack className="w-5 h-5 text-white" />
-        </div>
+        <Logo size="md" />
       </Link>
 
       <Unauthenticated>
@@ -32,10 +27,24 @@ export default function Header() {
         </div>
       </Unauthenticated>
       <Authenticated>
-        <Button variant="destructive" size="sm" onClick={handleSignOut}>
-          Logout
-          <LucideLogOut className="w-4 h-4" />
-        </Button>
+        <div className="flex flex-row items-center gap-1">
+          <span className="flex items-center gap-1">
+            <img
+              alt="User avatar"
+              src={data?.user?.image ?? ""}
+              className="size-7 rounded"
+            />
+            <p>{data?.user?.name ?? ""}</p>
+          </span>
+          <Button
+            variant="ghost"
+            className="text-destructive"
+            size="icon"
+            onClick={handleSignOut}
+          >
+            <LucideLogOut className="w-4 h-4" />
+          </Button>
+        </div>
       </Authenticated>
       <AuthLoading>Loading...</AuthLoading>
     </header>

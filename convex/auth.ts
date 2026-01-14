@@ -32,6 +32,12 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
       enabled: true,
       requireEmailVerification: false,
     },
+    socialProviders: {
+      github: {
+        clientId: "Ov23lipC96MJWbLxQ7DI",
+        clientSecret: "3dd9fff636a290dfc0e900fe3a58dbb831a9ee2c",
+      },
+    },
     plugins: [
       // The Convex plugin is required for Convex compatibility
       convex({ authConfig }),

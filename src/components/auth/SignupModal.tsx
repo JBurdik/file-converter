@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useState } from "react";
+import { Button } from "@/components/ui/Button";
 import {
   Dialog,
   DialogContent,
@@ -6,29 +7,35 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/Dialog"
-import { Button } from "@/components/ui/Button"
-import { Input } from "@/components/ui/Input"
-import { Label } from "@/components/ui/Label"
+} from "@/components/ui/Dialog";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
+import { authClient } from "@/lib/auth-client";
 
 const SignupModal = () => {
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (password !== confirmPassword) {
-      alert("Passwords don't match")
-      return
+      alert("Passwords don't match");
+      return;
     }
-    setIsLoading(true)
+    setIsLoading(true);
     // TODO: Implement actual signup logic
-    console.log("Signup:", { name, email, password })
-    setTimeout(() => setIsLoading(false), 1000)
-  }
+    console.log("Signup:", { name, email, password });
+    authClient.signUp.email({
+      email,
+      password,
+      name,
+      image: `https://api.dicebear.com/9.x/fun-emoji/svg?seed=${email.split("@")[0]}`,
+    });
+    setTimeout(() => setIsLoading(false), 1000);
+  };
 
   return (
     <Dialog>
@@ -96,11 +103,7 @@ const SignupModal = () => {
             />
           </div>
 
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isLoading}
-          >
+          <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? "Creating account..." : "Create account"}
           </Button>
         </form>
@@ -158,7 +161,7 @@ const SignupModal = () => {
         </p>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
 
-export default SignupModal
+export default SignupModal;
