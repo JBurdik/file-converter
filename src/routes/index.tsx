@@ -138,6 +138,9 @@ function FileConverterLanding() {
           <p className="mt-4 text-sm text-text-hint">
             or drag and drop images here
           </p>
+          <p className="mt-2 text-xs text-text-hint/70">
+            Files are automatically deleted after 24 hours
+          </p>
         </div>
 
         {/* Conversion queue */}

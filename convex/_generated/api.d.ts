@@ -11,6 +11,7 @@
 import type * as actions from "../actions.js";
 import type * as auth from "../auth.js";
 import type * as conversions from "../conversions.js";
+import type * as crons from "../crons.js";
 import type * as http from "../http.js";
 import type * as todos from "../todos.js";
 
@@ -24,6 +25,7 @@ declare const fullApi: ApiFromModules<{
   actions: typeof actions;
   auth: typeof auth;
   conversions: typeof conversions;
+  crons: typeof crons;
   http: typeof http;
   todos: typeof todos;
 }>;

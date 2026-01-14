@@ -41,11 +41,12 @@ function ConversionQueueItem({ item, targetFormat, onRemove }: ConversionQueueIt
   )
 
   // Determine the current status and progress
-  const status = conversion?.status ?? item.status
-  const isCompleted = status === 'completed'
-  const isFailed = status === 'failed'
-  const isProcessing = status === 'processing' || item.status === 'converting'
-  const isUploading = item.status === 'uploading'
+  // Prioritize server status when available
+  const serverStatus = conversion?.status
+  const isCompleted = serverStatus === 'completed'
+  const isFailed = serverStatus === 'failed' || item.status === 'error'
+  const isUploading = !serverStatus && item.status === 'uploading'
+  const isProcessing = !isCompleted && !isFailed && !isUploading
 
   // Calculate progress
   let progress = item.progress

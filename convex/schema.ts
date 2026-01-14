@@ -35,7 +35,8 @@ export default defineSchema({
   })
     .index('by_user', ['userId', 'createdAt'])
     .index('by_ip', ['ipAddress', 'createdAt'])
-    .index('by_status', ['status']),
+    .index('by_status', ['status'])
+    .index('by_createdAt', ['createdAt']),
 
   // Rate limiting (daily counters)
   rateLimits: defineTable({

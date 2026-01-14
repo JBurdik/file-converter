@@ -286,6 +286,48 @@ export const generateUploadUrlInternal = internalMutation({
   },
 });
 
+// Internal: Cleanup old conversions (called by cron)
+const CLEANUP_AGE_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+export const cleanupOldConversions = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const cutoffTime = Date.now() - CLEANUP_AGE_MS;
+
+    // Find old conversions using index
+    const oldConversions = await ctx.db
+      .query("conversions")
+      .withIndex("by_createdAt", (q) => q.lt("createdAt", cutoffTime))
+      .take(100); // Process in batches to avoid timeout
+
+    let deletedCount = 0;
+    for (const conversion of oldConversions) {
+      // Delete storage files
+      try {
+        await ctx.storage.delete(conversion.originalStorageId);
+      } catch {
+        // File may already be deleted
+      }
+
+      if (conversion.convertedStorageId) {
+        try {
+          await ctx.storage.delete(conversion.convertedStorageId);
+        } catch {
+          // File may already be deleted
+        }
+      }
+
+      // Delete conversion record
+      await ctx.db.delete(conversion._id);
+      deletedCount++;
+    }
+
+    if (deletedCount > 0) {
+      console.log(`Cleaned up ${deletedCount} old conversions`);
+    }
+  },
+});
+
 // Internal: Decrement rate limit on failed conversion (refund)
 export const decrementRateLimit = internalMutation({
   args: {
