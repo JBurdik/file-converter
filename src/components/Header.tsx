@@ -1,8 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 import { FileStack, LucideLogOut } from "lucide-react";
-import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/Button";
+import { authClient } from "@/lib/auth-client";
+import LoginModal from "./auth/LoginModal";
+import SignupModal from "./auth/SignupModal";
 
 export default function Header() {
   const handleSignIn = () => {
@@ -25,12 +27,8 @@ export default function Header() {
 
       <Unauthenticated>
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={handleSignIn}>
-            Login
-          </Button>
-          <Button variant="primary" size="sm" onClick={handleSignUp}>
-            Sign up
-          </Button>
+          <LoginModal />
+          <SignupModal />
         </div>
       </Unauthenticated>
       <Authenticated>

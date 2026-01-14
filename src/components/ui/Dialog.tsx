@@ -33,7 +33,7 @@ interface DialogButtonProps {
   onClick?: () => void;
 }
 
-function DialogRoot({ open, onOpenChange, children }: DialogProps) {
+export function Dialog({ open, onOpenChange, children }: DialogProps) {
   return (
     <BaseDialog.Root open={open} onOpenChange={onOpenChange}>
       {children}
@@ -41,7 +41,7 @@ function DialogRoot({ open, onOpenChange, children }: DialogProps) {
   );
 }
 
-function DialogTrigger({ children, className }: { children: ReactNode; className?: string }) {
+export function DialogTrigger({ children, className }: { children: ReactNode; className?: string }) {
   return (
     <BaseDialog.Trigger
       className={twMerge(buttonVariants({ variant: "secondary", size: "md" }), className)}
@@ -51,7 +51,7 @@ function DialogTrigger({ children, className }: { children: ReactNode; className
   );
 }
 
-function DialogContent({ children, className }: DialogContentProps) {
+export function DialogContent({ children, className }: DialogContentProps) {
   return (
     <BaseDialog.Portal>
       <BaseDialog.Backdrop className="fixed inset-0 min-h-dvh bg-black/25 backdrop-blur-[2px] transition-all duration-200 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
@@ -70,7 +70,7 @@ function DialogContent({ children, className }: DialogContentProps) {
   );
 }
 
-function DialogTitle({ children }: DialogTitleProps) {
+export function DialogTitle({ children }: DialogTitleProps) {
   return (
     <BaseDialog.Title className="pr-8 text-xl font-semibold text-text-primary">
       {children}
@@ -78,7 +78,7 @@ function DialogTitle({ children }: DialogTitleProps) {
   );
 }
 
-function DialogDescription({ children }: DialogDescriptionProps) {
+export function DialogDescription({ children }: DialogDescriptionProps) {
   return (
     <BaseDialog.Description className="mt-2 text-base text-text-secondary leading-relaxed">
       {children}
@@ -86,11 +86,11 @@ function DialogDescription({ children }: DialogDescriptionProps) {
   );
 }
 
-function DialogActions({ children }: DialogActionsProps) {
+export function DialogActions({ children }: DialogActionsProps) {
   return <div className="mt-6 flex justify-end gap-3">{children}</div>;
 }
 
-function DialogButton({ children, variant = "secondary", onClick }: DialogButtonProps) {
+export function DialogButton({ children, variant = "secondary", onClick }: DialogButtonProps) {
   return (
     <Button variant={variant} size="md" onClick={onClick}>
       {children}
@@ -98,21 +98,10 @@ function DialogButton({ children, variant = "secondary", onClick }: DialogButton
   );
 }
 
-function DialogClose({ children, variant = "secondary" }: Omit<DialogButtonProps, "onClick">) {
+export function DialogClose({ children, variant = "secondary" }: Omit<DialogButtonProps, "onClick">) {
   return (
     <BaseDialog.Close className={buttonVariants({ variant, size: "md" })}>
       {children}
     </BaseDialog.Close>
   );
 }
-
-export const Dialog = {
-  Root: DialogRoot,
-  Trigger: DialogTrigger,
-  Content: DialogContent,
-  Title: DialogTitle,
-  Description: DialogDescription,
-  Actions: DialogActions,
-  Button: DialogButton,
-  Close: DialogClose,
-};
