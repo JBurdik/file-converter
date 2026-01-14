@@ -42,7 +42,9 @@ function FileConverterLanding() {
   }
 
   return (
-    <main className="flex-1 flex flex-col items-center px-6 pt-16">
+    <div className="flex-1 flex flex-col bg-[radial-gradient(circle_at_top,#EBF3FF_0%,#FFFFFF_100%)]">
+      {/* Main content */}
+      <main className="flex-1 flex flex-col items-center px-6 pt-16">
         {/* Heading */}
         <h1 className="text-5xl font-bold tracking-tight text-text-primary mb-6">
           File Converter
@@ -107,6 +109,7 @@ function FileConverterLanding() {
             or drag and drop files here
           </p>
         </div>
-    </main>
+      </main>
+    </div>
   )
 }
