@@ -49,40 +49,35 @@ services:
 
   # Deploy Convex functions (runs once on startup, then exits)
   deploy:
-    image: node:20-slim
+    image: docker:cli
     working_dir: /app
     restart: "no"
     volumes:
       - ./convex:/app/convex
       - ./package.json:/app/package.json
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - CONVEX_SELF_HOST_URL=${CONVEX_SELF_HOST_URL:-http://backend:3210}
-      - CONVEX_ADMIN_KEY=${CONVEX_ADMIN_KEY}
-      - DASHBOARD_PORT=${DASHBOARD_PORT:-6791}
     command: >
       sh -c "
         echo '========================================';
         echo '  Convex Deploy Service';
         echo '========================================';
         echo '';
-        if [ -z \"$$CONVEX_ADMIN_KEY\" ]; then
-          echo '❌ CONVEX_ADMIN_KEY is not set!';
-          echo '';
-          echo 'To get your admin key:';
-          echo '  1. Open dashboard: http://localhost:'$$DASHBOARD_PORT;
-          echo '  2. Go to Settings → Admin Key';
-          echo '  3. Add to .env: CONVEX_ADMIN_KEY=your-key';
-          echo '  4. Restart: docker compose -f docker-compose.prod.yml up -d deploy';
-          echo '';
+        echo 'Generating admin key from backend...';
+        ADMIN_KEY=$$(docker exec $$(docker ps -qf 'name=backend') ./generate_admin_key.sh 2>/dev/null | tail -1);
+        if [ -z \"$$ADMIN_KEY\" ]; then
+          echo '❌ Failed to generate admin key';
           exit 1;
         fi;
-        echo '✓ Admin Key: '$$CONVEX_ADMIN_KEY;
+        echo '✓ Admin Key: '$$ADMIN_KEY;
         echo '✓ Backend URL: '$$CONVEX_SELF_HOST_URL;
         echo '';
         echo 'Installing convex CLI...';
+        apk add --no-cache nodejs npm > /dev/null 2>&1;
         npm install convex --silent;
         echo 'Deploying functions...';
-        npx convex deploy --url $$CONVEX_SELF_HOST_URL --admin-key $$CONVEX_ADMIN_KEY --cmd 'echo done';
+        npx convex deploy --url $$CONVEX_SELF_HOST_URL --admin-key $$ADMIN_KEY --cmd 'echo done';
         echo '';
         echo '✓ Deployment complete!';
         echo '========================================';

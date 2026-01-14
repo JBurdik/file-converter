@@ -18,14 +18,11 @@ cd file-converter
 # Setup environment
 cp .env.example .env
 
-# Start backend first to get admin key
-docker compose -f docker-compose.prod.yml up -d backend dashboard
-
-# Get admin key from dashboard (http://your-ip:6791)
-# Add it to .env: CONVEX_ADMIN_KEY=your-key
-
-# Start all services (deploy runs automatically once, then exits)
+# Start all services (admin key is auto-generated)
 docker compose -f docker-compose.prod.yml up -d --build
+
+# View deploy logs to see the admin key
+docker compose -f docker-compose.prod.yml logs deploy
 ```
 
 ## Services
@@ -68,21 +65,25 @@ DASHBOARD_PORT=6791
 docker compose -f docker-compose.prod.yml up -d --build
 ```
 
-### 3. Get Admin Key
-
-1. Open Convex Dashboard: `http://your-vps-ip:6791`
-2. Go to Settings → Admin Key
-3. Add to `.env`:
+### 3. Start All Services
 
 ```bash
-CONVEX_ADMIN_KEY=your-admin-key-here
+# Admin key is auto-generated from backend container
+docker compose -f docker-compose.prod.yml up -d --build
 ```
 
-### 4. Start All Services
+### 4. View Admin Key (optional)
+
+The admin key is automatically generated and printed in deploy logs:
 
 ```bash
-# Deploy service runs automatically once backend is healthy
-docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml logs deploy
+```
+
+Or generate manually:
+
+```bash
+docker compose -f docker-compose.prod.yml exec backend ./generate_admin_key.sh
 ```
 
 ## Updating
@@ -179,8 +180,9 @@ docker compose -f docker-compose.prod.yml logs app
 
 ### Convex deploy fails
 - Verify backend is healthy: `curl http://localhost:3210/version`
-- Check admin key in `.env`
-- Ensure backend is running before deploy
+- Check deploy logs: `docker compose -f docker-compose.prod.yml logs deploy`
+- Regenerate admin key: `docker compose -f docker-compose.prod.yml exec backend ./generate_admin_key.sh`
+- Ensure docker socket is accessible (deploy container needs it)
 
 ### Sharp not working
 The custom `Dockerfile.convex` includes sharp support. If issues persist:
