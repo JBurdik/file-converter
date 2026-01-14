@@ -32,7 +32,7 @@ export default function Header() {
         </div>
       </Unauthenticated>
       <Authenticated>
-        <Button variant="danger" size="sm" onClick={handleSignOut}>
+        <Button variant="destructive" size="sm" onClick={handleSignOut}>
           Logout
           <LucideLogOut className="w-4 h-4" />
         </Button>

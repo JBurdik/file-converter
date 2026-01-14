@@ -77,7 +77,7 @@ function FileConverterLanding() {
           </div>
 
           {/* Upload button */}
-          <Button variant="primary" size="lg" onClick={handleUploadClick}>
+          <Button variant="default" size="lg" onClick={handleUploadClick}>
             <Upload className="w-5 h-5" />
             <span>Upload Files</span>
           </Button>

@@ -1,107 +1,129 @@
-import { Dialog as BaseDialog } from "@base-ui/react/dialog";
-import { X } from "lucide-react";
-import { ReactNode } from "react";
-import { Button, buttonVariants } from "./Button";
-import { twMerge } from "tailwind-merge";
+"use client"
 
-interface DialogProps {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  children: ReactNode;
+import * as React from "react"
+import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"
+import { X } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+
+function Dialog({ ...props }: DialogPrimitive.Root.Props) {
+  return <DialogPrimitive.Root data-slot="dialog" {...props} />
 }
 
-interface DialogContentProps {
-  children: ReactNode;
-  className?: string;
+function DialogTrigger({ ...props }: DialogPrimitive.Trigger.Props) {
+  return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />
 }
 
-interface DialogTitleProps {
-  children: ReactNode;
+function DialogPortal({ ...props }: DialogPrimitive.Portal.Props) {
+  return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />
 }
 
-interface DialogDescriptionProps {
-  children: ReactNode;
+function DialogClose({ ...props }: DialogPrimitive.Close.Props) {
+  return <DialogPrimitive.Close data-slot="dialog-close" {...props} />
 }
 
-interface DialogActionsProps {
-  children: ReactNode;
-}
-
-interface DialogButtonProps {
-  children: ReactNode;
-  variant?: "primary" | "secondary";
-  onClick?: () => void;
-}
-
-export function Dialog({ open, onOpenChange, children }: DialogProps) {
+function DialogOverlay({
+  className,
+  ...props
+}: DialogPrimitive.Backdrop.Props) {
   return (
-    <BaseDialog.Root open={open} onOpenChange={onOpenChange}>
-      {children}
-    </BaseDialog.Root>
-  );
+    <DialogPrimitive.Backdrop
+      data-slot="dialog-overlay"
+      className={cn(
+        "fixed inset-0 z-50 bg-black/25 backdrop-blur-[2px] transition-all duration-200 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0",
+        className
+      )}
+      {...props}
+    />
+  )
 }
 
-export function DialogTrigger({ children, className }: { children: ReactNode; className?: string }) {
+function DialogContent({
+  className,
+  children,
+  showCloseButton = true,
+  ...props
+}: DialogPrimitive.Popup.Props & {
+  showCloseButton?: boolean
+}) {
   return (
-    <BaseDialog.Trigger
-      className={twMerge(buttonVariants({ variant: "secondary", size: "md" }), className)}
-    >
-      {children}
-    </BaseDialog.Trigger>
-  );
-}
-
-export function DialogContent({ children, className }: DialogContentProps) {
-  return (
-    <BaseDialog.Portal>
-      <BaseDialog.Backdrop className="fixed inset-0 min-h-dvh bg-black/25 backdrop-blur-[2px] transition-all duration-200 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
-      <BaseDialog.Popup
-        className={twMerge(
-          "fixed top-1/2 left-1/2 w-full max-w-md max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-200 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
+    <DialogPortal>
+      <DialogOverlay />
+      <DialogPrimitive.Popup
+        data-slot="dialog-content"
+        className={cn(
+          "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[425px] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-2xl bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-200 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0 outline-none sm:rounded-2xl",
           className
         )}
+        {...props}
       >
-        <BaseDialog.Close className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full text-text-hint hover:bg-gray-100 hover:text-text-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-blue transition-colors duration-200">
-          <X size={18} />
-        </BaseDialog.Close>
         {children}
-      </BaseDialog.Popup>
-    </BaseDialog.Portal>
-  );
+        {showCloseButton && (
+          <DialogPrimitive.Close
+            data-slot="dialog-close"
+            className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring transition-colors duration-200"
+          >
+            <X size={18} />
+            <span className="sr-only">Close</span>
+          </DialogPrimitive.Close>
+        )}
+      </DialogPrimitive.Popup>
+    </DialogPortal>
+  )
 }
 
-export function DialogTitle({ children }: DialogTitleProps) {
+function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <BaseDialog.Title className="pr-8 text-xl font-semibold text-text-primary">
-      {children}
-    </BaseDialog.Title>
-  );
+    <div
+      data-slot="dialog-header"
+      className={cn("flex flex-col gap-2", className)}
+      {...props}
+    />
+  )
 }
 
-export function DialogDescription({ children }: DialogDescriptionProps) {
+function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <BaseDialog.Description className="mt-2 text-base text-text-secondary leading-relaxed">
-      {children}
-    </BaseDialog.Description>
-  );
+    <div
+      data-slot="dialog-footer"
+      className={cn("mt-6 flex justify-end gap-3", className)}
+      {...props}
+    />
+  )
 }
 
-export function DialogActions({ children }: DialogActionsProps) {
-  return <div className="mt-6 flex justify-end gap-3">{children}</div>;
-}
-
-export function DialogButton({ children, variant = "secondary", onClick }: DialogButtonProps) {
+function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
   return (
-    <Button variant={variant} size="md" onClick={onClick}>
-      {children}
-    </Button>
-  );
+    <DialogPrimitive.Title
+      data-slot="dialog-title"
+      className={cn("text-xl font-semibold text-foreground", className)}
+      {...props}
+    />
+  )
 }
 
-export function DialogClose({ children, variant = "secondary" }: Omit<DialogButtonProps, "onClick">) {
+function DialogDescription({
+  className,
+  ...props
+}: DialogPrimitive.Description.Props) {
   return (
-    <BaseDialog.Close className={buttonVariants({ variant, size: "md" })}>
-      {children}
-    </BaseDialog.Close>
-  );
+    <DialogPrimitive.Description
+      data-slot="dialog-description"
+      className={cn("text-base text-muted-foreground leading-relaxed", className)}
+      {...props}
+    />
+  )
+}
+
+export {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
 }
