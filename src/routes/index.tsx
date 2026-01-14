@@ -1,45 +1,45 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useState, useRef, useCallback } from 'react'
-import { Upload } from 'lucide-react'
-import CloudIllustration from '../components/CloudIllustration'
+import { createFileRoute } from "@tanstack/react-router";
+import { Upload } from "lucide-react";
+import { useCallback, useRef, useState } from "react";
+import CloudIllustration from "../components/CloudIllustration";
 
-export const Route = createFileRoute('/')({ component: FileConverterLanding })
+export const Route = createFileRoute("/")({ component: FileConverterLanding });
 
 function FileConverterLanding() {
-  const [isDragOver, setIsDragOver] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isDragOver, setIsDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragOver(true)
-  }, [])
+    e.preventDefault();
+    setIsDragOver(true);
+  }, []);
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragOver(false)
-  }, [])
+    e.preventDefault();
+    setIsDragOver(false);
+  }, []);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragOver(false)
-    const files = Array.from(e.dataTransfer.files)
+    e.preventDefault();
+    setIsDragOver(false);
+    const files = Array.from(e.dataTransfer.files);
     if (files.length > 0) {
-      console.log('Dropped files:', files)
+      console.log("Dropped files:", files);
       // TODO: Handle file upload
     }
-  }, [])
+  }, []);
 
   const handleUploadClick = () => {
-    fileInputRef.current?.click()
-  }
+    fileInputRef.current?.click();
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
+    const files = Array.from(e.target.files || []);
     if (files.length > 0) {
-      console.log('Selected files:', files)
+      console.log("Selected files:", files);
       // TODO: Handle file upload
     }
-  }
+  };
 
   return (
     <div className="flex-1 flex flex-col bg-[radial-gradient(circle_at_top,#EBF3FF_0%,#FFFFFF_100%)]">
@@ -62,8 +62,8 @@ function FileConverterLanding() {
             transition-all duration-200
             ${
               isDragOver
-                ? 'border-brand-blue bg-brand-blue/5'
-                : 'border-border-dropzone bg-white/80'
+                ? "border-brand-blue bg-brand-blue/5"
+                : "border-border-dropzone bg-white/80"
             }
           `}
           onDragOver={handleDragOver}
@@ -111,5 +111,5 @@ function FileConverterLanding() {
         </div>
       </main>
     </div>
-  )
+  );
 }

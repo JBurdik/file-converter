@@ -65,12 +65,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <ConvexBetterAuthProvider
-          client={context.convexQueryClient.convexClient}
-          authClient={authClient}
-          initialToken={context.token}
-        >
-          <ConvexProvider>
+        <div className="root">
+          <ConvexBetterAuthProvider
+            client={context.convexQueryClient.convexClient}
+            authClient={authClient}
+            initialToken={context.token}
+          >
             <div className="min-h-screen flex flex-col">
               <Header />
               <div className="flex-1">{children}</div>
@@ -87,9 +87,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                 },
               ]}
             />
-          </ConvexProvider>
-        </ConvexBetterAuthProvider>
-        <Scripts />
+          </ConvexBetterAuthProvider>
+          <Scripts />
+        </div>
       </body>
     </html>
   );

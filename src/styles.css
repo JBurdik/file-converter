@@ -1,31 +1,37 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-blue: #2D88FF;
-  --color-brand-blue-light: #4A9DFF;
-  --color-text-primary: #1A1A1A;
-  --color-text-secondary: #4A4A4A;
+  --color-brand-blue: #2d88ff;
+  --color-brand-blue-light: #4a9dff;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #4a4a4a;
   --color-text-hint: #808080;
-  --color-border-light: #E5E5E5;
-  --color-border-dropzone: #C4C4C4;
+  --color-border-light: #e5e5e5;
+  --color-border-dropzone: #c4c4c4;
 }
 
 body {
   @apply m-0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  position: relative;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+.root {
+  isolation: isolate;
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {

@@ -2,10 +2,15 @@ import { ConvexQueryClient } from "@convex-dev/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 
-const CONVEX_URL = (import.meta as any).env.VITE_CONVEX_URL;
+const convexUrl = import.meta.env.VITE_CONVEX_URL;
+if (!convexUrl) {
+  throw new Error("VITE_CONVEX_URL is not set");
+}
 
 // Create the ConvexQueryClient instance
-export const convexQueryClient = new ConvexQueryClient(CONVEX_URL ?? "");
+const convexQueryClient = new ConvexQueryClient(convexUrl, {
+  expectAuth: true,
+});
 
 // Create a new router instance
 export const getRouter = () => {
