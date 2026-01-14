@@ -1,17 +1,18 @@
 services:
+  # Convex Backend with sharp support
   backend:
     build:
       context: .
       dockerfile: Dockerfile.convex
     restart: unless-stopped
     ports:
-      - "${PORT:-3210}:3210"
+      - "${CONVEX_PORT:-3210}:3210"
       - "${SITE_PROXY_PORT:-3211}:3211"
     volumes:
       - convex_data:/convex/data
     environment:
-      - CONVEX_CLOUD_ORIGIN=${CONVEX_CLOUD_ORIGIN:-http://127.0.0.1:${PORT:-3210}}
-      - CONVEX_SITE_ORIGIN=${CONVEX_SITE_ORIGIN:-http://127.0.0.1:${SITE_PROXY_PORT:-3211}}
+      - CONVEX_CLOUD_ORIGIN=${CONVEX_CLOUD_ORIGIN:-http://127.0.0.1:3210}
+      - CONVEX_SITE_ORIGIN=${CONVEX_SITE_ORIGIN:-http://127.0.0.1:3211}
       - RUST_LOG=${RUST_LOG:-info}
       - DOCUMENT_RETENTION_DELAY=${DOCUMENT_RETENTION_DELAY:-172800}
     healthcheck:
@@ -20,16 +21,51 @@ services:
       start_period: 30s
       retries: 3
 
+  # Convex Dashboard
   dashboard:
     image: ghcr.io/get-convex/convex-dashboard:latest
     restart: unless-stopped
     ports:
       - "${DASHBOARD_PORT:-6791}:6791"
     environment:
-      - NEXT_PUBLIC_DEPLOYMENT_URL=${NEXT_PUBLIC_DEPLOYMENT_URL:-http://127.0.0.1:${PORT:-3210}}
+      - NEXT_PUBLIC_DEPLOYMENT_URL=${NEXT_PUBLIC_DEPLOYMENT_URL:-http://127.0.0.1:3210}
     depends_on:
       backend:
         condition: service_healthy
+
+  # Frontend App
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      - VITE_CONVEX_URL=${CONVEX_CLOUD_ORIGIN:-http://127.0.0.1:3210}
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  # Deploy Convex functions (run once)
+  # Usage: docker compose -f docker-compose.prod.yml run --rm deploy
+  deploy:
+    image: node:20-slim
+    working_dir: /app
+    volumes:
+      - ./convex:/app/convex
+      - ./package.json:/app/package.json
+    environment:
+      - CONVEX_SELF_HOST_URL=${CONVEX_SELF_HOST_URL:-http://backend:3210}
+      - CONVEX_ADMIN_KEY=${CONVEX_ADMIN_KEY}
+    command: >
+      sh -c "npm install convex &&
+             npx convex deploy --url $$CONVEX_SELF_HOST_URL --admin-key $$CONVEX_ADMIN_KEY --cmd 'echo Deployment complete'"
+    depends_on:
+      backend:
+        condition: service_healthy
+    profiles:
+      - deploy
 
 volumes:
   convex_data:
