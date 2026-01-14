@@ -47,11 +47,11 @@ services:
       backend:
         condition: service_healthy
 
-  # Deploy Convex functions (run once)
-  # Usage: docker compose -f docker-compose.prod.yml run --rm deploy
+  # Deploy Convex functions (runs once on startup, then exits)
   deploy:
     image: node:20-slim
     working_dir: /app
+    restart: "no"
     volumes:
       - ./convex:/app/convex
       - ./package.json:/app/package.json
@@ -64,8 +64,6 @@ services:
     depends_on:
       backend:
         condition: service_healthy
-    profiles:
-      - deploy
 
 volumes:
   convex_data:

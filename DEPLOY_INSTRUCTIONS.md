@@ -18,14 +18,14 @@ cd file-converter
 # Setup environment
 cp .env.example .env
 
-# Start all services
-docker compose -f docker-compose.prod.yml up -d --build
+# Start backend first to get admin key
+docker compose -f docker-compose.prod.yml up -d backend dashboard
 
 # Get admin key from dashboard (http://your-ip:6791)
 # Add it to .env: CONVEX_ADMIN_KEY=your-key
 
-# Deploy Convex functions
-docker compose -f docker-compose.prod.yml --profile deploy run --rm deploy
+# Start all services (deploy runs automatically once, then exits)
+docker compose -f docker-compose.prod.yml up -d --build
 ```
 
 ## Services
@@ -36,6 +36,7 @@ docker compose -f docker-compose.prod.yml --profile deploy run --rm deploy
 | backend | 3210 | Convex backend API |
 | site | 3211 | Convex HTTP actions |
 | dashboard | 6791 | Convex admin dashboard |
+| deploy | - | Deploys Convex functions (runs once, then exits) |
 
 ## Detailed Setup
 
@@ -77,10 +78,11 @@ docker compose -f docker-compose.prod.yml up -d --build
 CONVEX_ADMIN_KEY=your-admin-key-here
 ```
 
-### 4. Deploy Convex Functions
+### 4. Start All Services
 
 ```bash
-docker compose -f docker-compose.prod.yml --profile deploy run --rm deploy
+# Deploy service runs automatically once backend is healthy
+docker compose -f docker-compose.prod.yml up -d --build
 ```
 
 ## Updating
@@ -91,11 +93,12 @@ When you make changes:
 # Pull latest code
 git pull origin main
 
-# Rebuild and restart app
-docker compose -f docker-compose.prod.yml up -d --build app
+# Rebuild and restart (deploy runs automatically)
+docker compose -f docker-compose.prod.yml up -d --build
 
-# Redeploy Convex functions (if changed)
-docker compose -f docker-compose.prod.yml --profile deploy run --rm deploy
+# Or restart only specific services
+docker compose -f docker-compose.prod.yml up -d --build app
+docker compose -f docker-compose.prod.yml up -d --build deploy  # redeploy functions
 ```
 
 ## Reverse Proxy (Nginx)
@@ -160,8 +163,8 @@ docker compose -f docker-compose.prod.yml logs -f app
 # Rebuild specific service
 docker compose -f docker-compose.prod.yml up -d --build app
 
-# Deploy Convex functions
-docker compose -f docker-compose.prod.yml --profile deploy run --rm deploy
+# Redeploy Convex functions manually
+docker compose -f docker-compose.prod.yml up -d --build deploy
 
 # Check service status
 docker compose -f docker-compose.prod.yml ps
